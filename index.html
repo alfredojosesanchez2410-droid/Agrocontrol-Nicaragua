@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#176b43"><meta name="color-scheme" content="light"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="AgroControl"><meta name="description" content="AgroControl Nicaragua: registro agrícola, fotografías, cosecha y sanidad"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><title>AgroControl Nicaragua</title><link rel="stylesheet" href="style.css"></head>
+<body><header><div class="logo">🌱</div><div><h1>AgroControl Nicaragua</h1><small>Asistencia técnica y monitoreo de cultivos</small></div><span id="net" class="pill" role="status" aria-live="polite">● Sin conexión</span><button id="installBtn" class="install-btn" type="button" hidden>Instalar</button></header>
+<nav><button class="tab active" data-tab="inicio">Inicio</button><button class="tab" data-tab="foto">Analizar foto</button><button class="tab" data-tab="robusta">Café robusta</button><button class="tab" data-tab="nutricion">Nutrición</button><button class="tab" data-tab="registros">Registros</button><button class="tab" data-tab="ayuda">Guía</button></nav>
+<main>
+<section id="inicio" class="view active"><h2>Panel agrícola</h2><div class="stats"><article><small>Fotos registradas</small><b id="nphotos">0</b></article><article><small>Evaluaciones</small><b id="nchecks">0</b></article><article><small>Área evaluada</small><b id="narea">0 Mz</b></article></div><article class="card"><h3>Evaluación con fotografías</h3><p>Registra imágenes de café robusta, plátano, cacao, maíz, frijol, yuca y otros cultivos. Guarda evidencia para el seguimiento del técnico.</p><button class="primary" data-go="foto">Tomar o seleccionar foto</button></article><article class="card warning"><b>Importante</b><p>La evaluación fotográfica puede solicitar orientación visual a un servicio de IA cuando esté configurado. El módulo Nutrición incluye calendarios de referencia y calculadoras; las dosis deben validarse según análisis de suelo, cultivo y etiqueta.</p></article><div id="recent"></div></section>
+<section id="foto" class="view"><h2>Nueva evaluación fotográfica</h2><form id="photoForm">
+<label>Productor<input name="producer" placeholder="Nombre del productor" required></label>
+<label>Comunidad / finca<input name="farm" placeholder="Comunidad o finca"></label>
+<label>Cultivo<select name="crop" required><option value="">Seleccionar cultivo</option><option>Café robusta</option><option>Plátano</option><option>Cacao</option><option>Maíz</option><option>Frijol</option><option>Yuca</option><option>Otros cultivos</option></select></label>
+<label>Etapa del cultivo<select name="stage"><option>Establecimiento</option><option>Desarrollo vegetativo</option><option>Floración</option><option>Fructificación</option><option>Cosecha</option><option>Poscosecha</option></select></label>
+<label>Fotografía (cámara o galería)<input id="photo" name="photo" type="file" accept="image/*" capture="environment" required></label>
+<img id="preview" alt="Vista previa de la fotografía" hidden>
+<div class="card ai-card">
+  <h3>Diagnóstico asistido por inteligencia artificial</h3>
+  <p class="hint">Analiza la fotografía y los datos del cultivo para obtener posibles causas y recomendaciones preliminares. Requiere conexión a internet.</p>
+  <label>Código privado de acceso a IA<input id="aiAccessCode" type="password" autocomplete="off" placeholder="Código configurado por el administrador" required></label>
+  <button class="primary" id="aiAnalyze" type="button" disabled>Analizar fotografía con IA</button>
+  <div id="aiStatus" class="result" aria-live="polite">Selecciona una fotografía para habilitar el análisis.</div>
+</div>
+<label>Área evaluada (manzanas)<input name="area" type="number" min="0" step="0.01" placeholder="Ej. 0.25"></label>
+<h3>Evaluación de sanidad</h3>
+<label>Síntoma observado<select name="symptom"><option>No se observa síntoma evidente</option><option>Manchas en hojas</option><option>Amarillamiento</option><option>Marchitez</option><option>Necrosis / tejido seco</option><option>Frutos dañados o podridos</option><option>Perforaciones / mordeduras</option><option>Presencia de insectos</option><option>Daño en tallo o raíz</option><option>Otro / no identificado</option></select></label>
+<label>Parte afectada<input name="part" placeholder="Hojas, tallo, raíz, fruto..."></label>
+<label>Porcentaje estimado de plantas afectadas (%)<input name="incidence" type="number" min="0" max="100" step="1" placeholder="No es diagnóstico automático"></label>
+<label>Descripción / observaciones<textarea name="notes" rows="3" placeholder="Distribución del daño, condiciones del lote, fecha de aparición..."></textarea></label>
+<h3>Estimación de cosecha (conteo de campo)</h3>
+<p class="hint">El conteo debe hacerse en una muestra representativa. La foto sirve como evidencia; no equivale por sí sola al rendimiento por manzana.</p>
+<label>Unidad de conteo<select name="unit"><option>Frutos visibles</option><option>Racimos</option><option>Mazorcas</option><option>Plantas productivas</option><option>Raíces comerciales</option><option>Otro</option></select></label>
+<label>Cantidad contada en la muestra<input name="count" type="number" min="0" step="1" placeholder="Ej. 35"></label>
+<label>Número de plantas evaluadas<input name="plants" type="number" min="1" step="1" placeholder="Ej. 10"></label>
+<label>Observaciones de cosecha<textarea name="harvestnotes" rows="2"></textarea></label>
+<button class="primary" type="submit">Guardar evaluación</button></form></section>
+
+<section id="robusta" class="view">
+<h2>Módulo especializado: café robusta</h2>
+<article class="card">
+<h3>1. Evaluación sanitaria asistida</h3>
+<p class="hint">Esta primera versión usa un árbol de síntomas ingresados por el usuario. Todavía no interpreta automáticamente los píxeles de la fotografía ni sustituye el diagnóstico de un técnico.</p>
+<label>Órgano observado<select id="rbOrgan"><option value="hoja">Hoja</option><option value="fruto">Fruto</option><option value="tallo">Tallo / rama</option><option value="raiz">Raíz</option><option value="planta">Planta completa</option></select></label>
+<label>Síntoma principal<select id="rbSymptom"><option value="orange">Pústulas o polvo anaranjado en el envés de hojas</option><option value="round">Manchas circulares oscuras en hojas, a veces con halo</option><option value="brown">Manchas café oscuro o negras en hojas / frutos</option><option value="web">Hilos o crecimiento algodonoso entre hojas y ramas</option><option value="holes">Orificios pequeños en frutos de café</option><option value="yellow">Amarillamiento general y bajo vigor</option><option value="rot">Lesiones húmedas, pudrición o muerte de tejidos</option><option value="unknown">Síntoma no identificado</option></select></label>
+<label>Condición del lote<select id="rbWeather"><option value="wet">Alta humedad, lluvia o sombra densa</option><option value="mixed">Humedad moderada / variable</option><option value="dry">Época seca o estrés hídrico</option></select></label>
+<button class="primary" id="rbDiagnose" type="button">Orientar evaluación sanitaria</button>
+<div id="rbDiagnosis" class="result" aria-live="polite">Selecciona los síntomas y solicita la orientación.</div>
+</article>
+<article class="card">
+<h3>2. Estimación de rendimiento por muestreo</h3>
+<p class="hint">La proyección se calcula con conteos de campo. Para obtener kg de café oro por manzana debes ingresar el peso promedio de cereza y el factor de conversión medido en tu beneficio.</p>
+<label>Plantas muestreadas<input id="rbPlants" type="number" min="1" value="10"></label>
+<label>Plantas productivas por manzana<input id="rbDensity" type="number" min="1" placeholder="Ingresar densidad real del lote"></label>
+<label>Bandolas productivas promedio por planta<input id="rbBranches" type="number" min="1" step="0.1" placeholder="Conteo promedio"></label>
+<label>Cerezas promedio por bandola<input id="rbCherries" type="number" min="0" step="1" placeholder="Conteo promedio"></label>
+<label>Peso de 100 cerezas maduras (gramos)<input id="rbWeight" type="number" min="1" step="0.1" placeholder="Pesar una muestra de 100 cerezas"></label>
+<label>Kg de cereza necesarios para 1 kg de café oro<input id="rbFactor" type="number" min="0.1" step="0.1" placeholder="Usar factor medido en el beneficio"></label>
+<label>Pérdida estimada (%)<input id="rbLoss" type="number" min="0" max="100" value="0"></label>
+<button class="primary" id="rbEstimate" type="button">Calcular rendimiento estimado</button>
+<div id="rbYield" class="result" aria-live="polite">Completa los datos del muestreo para calcular.</div>
+<p class="hint">La estimación supone que el promedio de bandolas y cerezas de las plantas muestreadas representa el lote. Repite el muestreo en varios puntos y etapas; el resultado no es una garantía de cosecha.</p>
+</article>
+</section>
+
+<section id="nutricion" class="view"><h2>Manejo nutricional de cultivos</h2>
+<p class="hint">Consulta calendarios de referencia, ajusta por zona y etapa, y calcula cantidades para tu parcela. Las dosis son referencias de guías técnicas de Nicaragua, no sustituyen el análisis de suelo ni la validación del técnico.</p>
+<article class="card">
+<h3>Plan de fertilización por cultivo</h3>
+<label>Cultivo<select id="nutCrop"><option value="coffee">Café robusta (referencia general de café)</option><option value="yuca">Yuca</option><option value="frijol">Frijol</option><option value="banano">Banano (validar antes de usar en plátano)</option><option value="cacao">Cacao</option><option value="maiz">Maíz</option><option value="platano">Plátano</option></select></label>
+<label>Zona<select id="nutZone"><option value="caribe">Costa Caribe de Nicaragua</option><option value="other">Otras zonas de Nicaragua</option></select></label>
+<div id="nutPlan" class="result" aria-live="polite"></div>
+</article>
+<article class="card"><h3>Calculadora de dosis para la parcela</h3>
+<p class="hint">Usa esta calculadora con una dosis que ya haya sido validada para el cultivo, lote y producto. No determina por sí sola la dosis agronómica correcta.</p>
+<label>Área de la parcela (manzanas)<input id="nutArea" type="number" min="0.01" step="0.01" value="1"></label>
+<label>Dosis recomendada por manzana (quintales)<input id="nutRate" type="number" min="0" step="0.01" placeholder="Ej. 2"></label>
+<button class="primary" id="nutCalc" type="button">Calcular fertilizante total</button>
+<div id="nutCalcResult" class="result" aria-live="polite">Ingresa el área y la dosis validada para calcular.</div>
+</article>
+<article class="card"><h3>Calculadora de fertilizante foliar</h3>
+<p class="hint">Introduce la dosis exacta indicada en la etiqueta del producto. No existe una dosis universal para todos los fertilizantes foliares.</p>
+<label>Dosis de etiqueta (ml por litro de agua)<input id="foliarRate" type="number" min="0" step="0.1" placeholder="Ej. según etiqueta"></label>
+<label>Capacidad de la bomba (litros)<input id="foliarTank" type="number" min="0.1" step="0.5" value="20"></label>
+<label>Número de bombas a preparar<input id="foliarPumps" type="number" min="0.1" step="0.5" value="1"></label>
+<button class="primary" id="foliarCalc" type="button">Calcular cantidad de producto</button>
+<div id="foliarResult" class="result" aria-live="polite">La dosis calculada será únicamente la indicada por la etiqueta.</div>
+</article>
+<article class="card warning"><b>Reglas para una recomendación responsable</b><ul><li>Priorizar análisis de suelo y, cuando sea útil, análisis foliar.</li><li>Confirmar edad, densidad, variedad, rendimiento esperado, pendiente, drenaje y textura del suelo.</li><li>Fraccionar las aplicaciones según cultivo, lluvia y etapa; no aplicar sobre suelo saturado ni antes de lluvias intensas.</li><li>En foliares, respetar concentración, compatibilidad, horario, equipo de protección y etiqueta.</li><li>La IA puede sugerir una posible deficiencia, pero no debe prescribir una fórmula o dosis sin datos suficientes.</li></ul></article>
+<article class="card"><h3>Fuentes técnicas de referencia</h3><ul><li><a href="https://inta.gob.ni/wp-content/uploads/2023/11/Recomendaciones-produccion-Cafe-2018.pdf" target="_blank" rel="noopener">INTA: Recomendaciones para producción de café (2018)</a></li><li><a href="https://inta.gob.ni/wp-content/uploads/2023/11/Recomendaciones-produccion-Yuca-2018.pdf" target="_blank" rel="noopener">INTA: Recomendaciones para producción de yuca (2018)</a></li><li><a href="https://inta.gob.ni/wp-content/uploads/2023/11/Recomendaciones-produccion-Banano-2018.pdf" target="_blank" rel="noopener">INTA: Recomendaciones para producción de banano (2018)</a></li><li><a href="https://www.economiafamiliar.gob.ni/backend/vistas/doc/cartilla/documento2984638.pdf" target="_blank" rel="noopener">Manual de granos básicos: maíz, arroz y frijol</a></li><li><a href="https://inta.gob.ni/wp-content/uploads/2023/11/Recomendaciones-produccion-Cacao-2018.pdf" target="_blank" rel="noopener">INTA: Recomendaciones para producción de cacao (2018)</a></li></ul></article>
+</section>
+
+<section id="registros" class="view"><h2>Registros guardados</h2><p class="hint">Los datos y fotografías permanecen en este navegador. Exporta respaldos periódicamente.</p><div id="records"></div><button id="export" class="secondary">Exportar respaldo (JSON)</button><button id="exportCsv" class="secondary" type="button">Exportar tabla (CSV)</button><label class="secondary import">Importar respaldo<input id="import" type="file" accept="application/json"></label></section>
+<section id="ayuda" class="view"><h2>Guía de uso y seguridad</h2><article class="card"><h3>Cómo tomar buenas fotografías</h3><ul><li>Enfoca la parte afectada y toma una segunda foto de la planta completa.</li><li>Usa luz natural, evita sombras fuertes y procura que la imagen esté enfocada.</li><li>Incluye una regla u objeto de tamaño conocido cuando necesites medir dimensiones.</li><li>Registra varias plantas de diferentes puntos del lote, no solo las más afectadas.</li></ul></article><article class="card"><h3>Para estimar rendimiento</h3><p>Registra un muestreo representativo, número de plantas, área, unidades comerciales, peso promedio y pérdidas. Para convertirlo a qq/Mz, kg/Mz o racimos/Mz hace falta calibrar la muestra y la unidad comercial para cada cultivo.</p></article><article class="card"><h3>Para identificar enfermedades</h3><p>Una fotografía puede orientar, pero síntomas similares pueden deberse a hongos, bacterias, virus, insectos, deficiencias nutricionales o estrés ambiental. Confirma con un técnico antes de aplicar agroquímicos. Sigue la etiqueta, dosis autorizada, equipo de protección y período de carencia.</p></article><article class="card"><h3>Instalación</h3><p>Cuando esta aplicación esté publicada en una dirección HTTPS, abre el enlace en Chrome Android y selecciona “Instalar aplicación” o “Agregar a pantalla principal”. En iPhone, usa Compartir → Añadir a pantalla de inicio.</p></article></section>
+</main><footer>AgroControl Nicaragua · PWA · Versión piloto · Datos locales en este dispositivo</footer><script src="app.js"></script></body></html>
